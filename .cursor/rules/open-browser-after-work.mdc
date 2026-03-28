@@ -1,0 +1,16 @@
+---
+description: Her görev bittikten sonra tarayıcıda uygulamayı aç; önce hataları düzelt.
+alwaysApply: true
+---
+
+# İş bitince tarayıcıda aç
+
+Bu projede (Fokus) kullanıcı açıkça ister:
+
+1. **Önce** derleme/lint/test veya ilgili doğrulamayı çalıştır; hata varsa **düzelt**, tekrar doğrula.
+2. **Sonra** yerel uygulamayı tarayıcıda aç:
+   - `http://localhost:3000` (Next.js varsayılan portu).
+   - Sunucu kapalıysa: kullanıcıya bırakmadan önce `npm run dev` veya `npm run dev:clean` ile arka planda başlatmayı dene; port meşgulse kullanıcıya kısaca bildir.
+3. Windows’ta tarayıcı açmak için projede: `npm run open` veya `Start-Process "http://localhost:3000"` (PowerShell).
+
+Bu adımı “isteğe bağlı” sayma; kullanıcı özellikle “aç” dediğinde veya işi tamamladığında **her zaman** uygula.

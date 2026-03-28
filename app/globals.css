@@ -1,0 +1,94 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/**
+ * Fokus — siyah / koyu mor zemin, kırmızı vurgu (#e63946 havası),
+ * başarı yeşili indirimler için.
+ */
+@layer base {
+  :root {
+    --background: 240 35% 5%;
+    --foreground: 210 25% 96%;
+    --card: 240 30% 8%;
+    --card-foreground: 210 25% 96%;
+    --popover: 240 30% 8%;
+    --popover-foreground: 210 25% 96%;
+    --muted: 240 20% 14%;
+    --muted-foreground: 215 15% 58%;
+    --border: 240 18% 16%;
+    --input: 240 18% 16%;
+    --ring: 355 76% 56%;
+    --accent: 355 76% 56%;
+    --accent-foreground: 0 0% 100%;
+    --success: 134 67% 52%;
+    --success-foreground: 240 35% 6%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+    --radius: 0.625rem;
+  }
+
+  .dark {
+    --background: 240 35% 5%;
+    --foreground: 210 25% 96%;
+    --card: 240 30% 8%;
+    --card-foreground: 210 25% 96%;
+    --popover: 240 30% 8%;
+    --popover-foreground: 210 25% 96%;
+    --muted: 240 20% 14%;
+    --muted-foreground: 215 15% 58%;
+    --border: 240 18% 16%;
+    --input: 240 18% 16%;
+    --ring: 355 76% 56%;
+    --accent: 355 76% 56%;
+    --accent-foreground: 0 0% 100%;
+    --success: 134 67% 52%;
+    --success-foreground: 240 35% 6%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+  }
+
+  body {
+    @apply bg-background font-sans text-foreground antialiased;
+    background-image:
+      radial-gradient(circle at 10% 10%, hsl(var(--accent) / 0.13), transparent 35%),
+      radial-gradient(circle at 90% 20%, hsl(var(--success) / 0.08), transparent 32%),
+      radial-gradient(circle at 50% 100%, hsl(240 18% 12% / 0.8), transparent 40%);
+    background-attachment: fixed;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-heading tracking-tight;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  ::selection {
+    background: hsl(var(--accent) / 0.35);
+    color: hsl(var(--accent-foreground));
+  }
+}
+
+@layer utilities {
+  .container-shell {
+    @apply mx-auto w-full max-w-6xl px-4;
+  }
+
+  .surface {
+    @apply rounded-2xl border border-border/80 bg-card/60 shadow-lg backdrop-blur;
+  }
+
+  .nav-bar {
+    border-bottom: 1px solid rgb(0 0 0 / 0.45);
+    background: hsl(240 32% 7% / 0.94);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+  }
+}
