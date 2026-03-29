@@ -2,11 +2,10 @@ import { z } from "zod";
 
 const envSchema = z.object({
   DATABASE_URL: z.string().min(1, "DATABASE_URL is required"),
-  NEXT_PUBLIC_APP_URL: z
-    .string()
-    .url("NEXT_PUBLIC_APP_URL must be a valid URL")
-    .optional()
-    .default("http://localhost:3000"),
+  NEXT_PUBLIC_APP_URL: z.preprocess(
+    (v) => (typeof v === "string" && v.trim() === "" ? undefined : v),
+    z.string().url("NEXT_PUBLIC_APP_URL must be a valid URL").optional(),
+  ),
   /** Açıkça true/false; boşsa geliştirmede true, NODE_ENV=production iken false kabul edilir. */
   DEMO_MODE: z.enum(["true", "false"]).optional(),
   NODE_ENV: z.enum(["development", "test", "production"]).optional().default("development"),
@@ -18,7 +17,12 @@ if (!parsed.success) {
   throw new Error(`Invalid environment variables: ${issues}`);
 }
 
-export const env = parsed.data;
+/** Boş / tanımsız URL’lerde yerel varsayılan (Prisma vb. için). */
+export const env = {
+  ...parsed.data,
+  NEXT_PUBLIC_APP_URL:
+    parsed.data.NEXT_PUBLIC_APP_URL?.trim() || "http://localhost:3000",
+};
 
 /**
  * Clerk oturumunda metadata yokken “herkes geliştirici” davranışı yalnızca geliştirme için.

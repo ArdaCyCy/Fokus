@@ -1,3 +1,5 @@
+import { getPublicSiteUrl } from "@/lib/site-url";
+
 /** Ödeme kanalı: İyzico ödeme formu veya cüzdan bakiyesi. */
 export type CheckoutProviderMode = "iyzico" | "wallet";
 
@@ -33,7 +35,5 @@ export function resolveCheckoutProvider(): CheckoutProviderMode {
 }
 
 export function getAppBaseUrl(): string {
-  const raw = process.env.NEXT_PUBLIC_APP_URL?.trim();
-  if (raw && /^https?:\/\//i.test(raw)) return raw.replace(/\/$/, "");
-  return "http://localhost:3000";
+  return getPublicSiteUrl();
 }

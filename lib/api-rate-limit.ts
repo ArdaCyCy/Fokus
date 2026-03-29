@@ -40,7 +40,7 @@ export async function enforceApiRateLimit(
 
   const retryAfterSec = Math.max(1, Math.ceil((reset - Date.now()) / 1000));
   return NextResponse.json(
-    { error: "Cok fazla istek. Lutfen biraz sonra tekrar deneyin." },
+    { error: "Çok fazla istek. Lütfen biraz sonra tekrar deneyin." },
     {
       status: 429,
       headers: {

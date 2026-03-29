@@ -7,6 +7,7 @@ import { Navbar } from "@/components/layout/navbar";
 import { CookieConsentBanner } from "@/components/layout/cookie-consent-banner";
 import { Footer } from "@/components/layout/footer";
 import { isClerkEnabled } from "@/lib/auth/clerk-config";
+import { getPublicSiteUrl } from "@/lib/site-url";
 import "./globals.css";
 
 const syne = Syne({
@@ -25,20 +26,7 @@ const siteTitle = "Fokus — Türkiye'nin indie oyun mağazası";
 const siteDescription =
   "Bağımsız oyunları keşfet, geliştiricileri destekle. Fokus, Türkiye odaklı indie oyun pazaryeri.";
 
-function safeSiteUrl(): string {
-  const raw = process.env.NEXT_PUBLIC_APP_URL?.trim();
-  if (raw && /^https?:\/\//i.test(raw)) {
-    try {
-      const u = new URL(raw);
-      if (u.hostname) return u.toString().replace(/\/$/, "");
-    } catch {
-      /* aşağıdaki varsayılana düş */
-    }
-  }
-  return "http://localhost:3000";
-}
-
-const siteUrl = safeSiteUrl();
+const siteUrl = getPublicSiteUrl();
 
 export const metadata: Metadata = {
   title: {

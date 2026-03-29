@@ -1,10 +1,10 @@
 # Fokus
 
-Türkiye odaklı **indie oyun mağazası** deneyimi: vitrin, arama, kütüphane, topluluk, geliştirici paneli, **Stripe** ile kart ödemesi veya **cüzdan** ile ödeme, webhook ile sipariş tamamlama, **Stripe Connect** ile geliştirici payı (isteğe bağlı), iade + transfer geri alma, **Resend** ile satın alma e-postası (isteğe bağlı), Clerk kimlik (opsiyonel), Prisma + PostgreSQL.
+Türkiye odaklı **indie oyun mağazası** deneyimi: vitrin, arama, kütüphane, topluluk, geliştirici paneli, **İyzico** ile kart ödemesi veya **cüzdan** ile ödeme, ödeme dönüşü ile sipariş tamamlama, iade akışı, **Resend** ile satın alma e-postası (isteğe bağlı), Clerk kimlik (opsiyonel), Prisma + PostgreSQL.
 
 ## Stack
 
-Next.js 15 (App Router) · React 19 · TypeScript · Tailwind CSS · Prisma · Clerk · Stripe
+Next.js 15 (App Router) · React 19 · TypeScript · Tailwind CSS · Prisma · Clerk · İyzico
 
 ## Hızlı başlangıç
 
@@ -18,7 +18,9 @@ npx prisma db seed
 npm run dev
 ```
 
-Üretim, Stripe webhook ve geliştirici paneli (Clerk `DEVELOPER` rolü) için: [`PRODUCTION_CHECKLIST.md`](./PRODUCTION_CHECKLIST.md).
+**Vercel:** Projeyi bağla; ortam değişkenlerini `.env.example` ile aynı isimlerle Production’a ekle (`DATABASE_URL`, Clerk anahtarları, `NEXT_PUBLIC_APP_URL` = canlı `https://…`, İyzico anahtarları vb.). `postinstall` içinde `prisma generate` çalışır. Şema ilk kez canlı DB’ye `npx prisma db push` (veya migrate) ile uygulanmalıdır.
+
+**Clerk:** Canlı URL’yi Clerk Dashboard → Domains / redirect URL listesine ekle; Production anahtarlarını Vercel’e koy.
 
 Kalite: `npm run verify` (lint + build + test).
 

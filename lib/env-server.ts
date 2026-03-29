@@ -8,6 +8,7 @@
  */
 
 import { isClerkEnabled } from "@/lib/auth/clerk-config";
+import { getPublicSiteUrl } from "@/lib/site-url";
 
 function issue(msg: string): never {
   console.error(`[Fokus] Üretim ortamı hatası: ${msg}`);
@@ -26,9 +27,11 @@ export function validateProductionEnvironment(): void {
     issue("DATABASE_URL tanımlı olmalıdır.");
   }
 
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL?.trim() ?? "";
-  if (!appUrl.startsWith("https://")) {
-    issue("NEXT_PUBLIC_APP_URL canlıda https:// ile başlamalıdır (SEO ve ödeme dönüşleri için).");
+  const resolved = getPublicSiteUrl();
+  if (!resolved.startsWith("https://")) {
+    issue(
+      "Canlıda site adresi https olmalıdır. Vercel’de Production için NEXT_PUBLIC_APP_URL’i https://alanadin.com veya https://proje.vercel.app olarak ayarlayın.",
+    );
   }
 
   const clerkPub = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY?.trim();

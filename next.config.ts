@@ -21,6 +21,10 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "picsum.photos", pathname: "/**" },
       { protocol: "https", hostname: "img.clerk.com", pathname: "/**" },
       { protocol: "https", hostname: "images.clerk.dev", pathname: "/**" },
+      { protocol: "https", hostname: "utfs.io", pathname: "/**" },
+      { protocol: "https", hostname: "*.ufs.sh", pathname: "/**" },
+      { protocol: "https", hostname: "uploadthing.com", pathname: "/**" },
+      { protocol: "https", hostname: "*.public.blob.vercel-storage.com", pathname: "/**" },
     ],
   },
 };

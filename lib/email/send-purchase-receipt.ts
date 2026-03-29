@@ -1,6 +1,7 @@
 import { auditLog } from "@/lib/api-observability";
 import { formatTryFromCents } from "@/lib/format/currency";
 import { db } from "@/lib/db";
+import { getPublicSiteUrl } from "@/lib/site-url";
 
 type Line = { title: string; chargedCents: number };
 
@@ -43,7 +44,7 @@ export async function sendPurchaseReceiptEmail(params: {
 <thead><tr><th style="text-align:left;border-bottom:1px solid #ddd;padding:8px">Ürün</th><th style="text-align:right;border-bottom:1px solid #ddd;padding:8px">Tutar</th></tr></thead>
 <tbody>${rows}</tbody></table>
 <p><strong>Toplam:</strong> ${escapeHtml(totalLabel)}</p>
-<p>Oyunları <a href="${process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "") ?? ""}/library">kütüphanenden</a> indirebilirsin.</p>
+<p>Oyunları <a href="${getPublicSiteUrl()}/library">kütüphanenden</a> indirebilirsin.</p>
 <p style="color:#666;font-size:12px;margin-top:32px">Bu e-posta otomatik gönderilmiştir.</p>
 </body></html>`;
 
