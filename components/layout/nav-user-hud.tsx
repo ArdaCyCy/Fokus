@@ -507,8 +507,8 @@ export function NavAuthSection() {
             <CartNavIcon />
             <SignInButton
               mode="modal"
-              fallbackRedirectUrl="/games"
-              forceRedirectUrl="/games"
+              fallbackRedirectUrl="/"
+              forceRedirectUrl="/"
             >
               <Button variant="default" size="sm">
                 Giriş

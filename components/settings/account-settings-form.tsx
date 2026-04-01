@@ -1,8 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
+import { ProfileImageFileField } from "@/components/profile/profile-image-file-field";
 import { Button } from "@/components/ui/button";
+
 const inputClass =
   "h-10 w-full rounded-md border border-white/[0.08] bg-background/60 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-accent";
 
@@ -20,6 +22,14 @@ export function AccountSettingsForm({ initial }: { initial: Initial }) {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
 
+  useEffect(() => {
+    setForm((p) => ({
+      ...p,
+      imageUrl: initial.imageUrl,
+      profileBackground: initial.profileBackground,
+    }));
+  }, [initial.imageUrl, initial.profileBackground]);
+
   return (
     <form
       className="space-y-4"
@@ -31,7 +41,12 @@ export function AccountSettingsForm({ initial }: { initial: Initial }) {
           const res = await fetch("/api/account/settings", {
             method: "PATCH",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ ...form, password: password || undefined }),
+            body: JSON.stringify({
+              username: form.username,
+              email: form.email,
+              profileFrame: form.profileFrame,
+              password: password || undefined,
+            }),
           });
           const data = await res.json();
           if (!res.ok) throw new Error(data?.error ?? "Kaydedilemedi");
@@ -44,7 +59,20 @@ export function AccountSettingsForm({ initial }: { initial: Initial }) {
         }
       }}
     >
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid gap-6 md:grid-cols-2">
+        <div className="space-y-4 md:col-span-2">
+          <ProfileImageFileField
+            label="Profil fotoğrafı"
+            kind="avatar"
+            currentUrl={form.imageUrl}
+          />
+          <ProfileImageFileField
+            label="Profil arka planı"
+            kind="background"
+            currentUrl={form.profileBackground}
+            previewClassName="h-24 w-full max-w-md rounded-md border border-white/[0.08] object-cover"
+          />
+        </div>
         <label className="space-y-1">
           <span className="text-sm text-muted-foreground">Takma ad</span>
           <input
@@ -62,29 +90,14 @@ export function AccountSettingsForm({ initial }: { initial: Initial }) {
             onChange={(e) => setForm((p) => ({ ...p, email: e.target.value }))}
           />
         </label>
-        <label className="space-y-1">
-          <span className="text-sm text-muted-foreground">Profil fotoğrafı URL</span>
-          <input
-            className={inputClass}
-            value={form.imageUrl}
-            onChange={(e) => setForm((p) => ({ ...p, imageUrl: e.target.value }))}
-            placeholder="https://..."
-          />
-        </label>
-        <label className="space-y-1">
+        <label className="space-y-1 md:col-span-2">
           <span className="text-sm text-muted-foreground">Profil çerçevesi</span>
           <input
             className={inputClass}
             value={form.profileFrame}
-            onChange={(e) => setForm((p) => ({ ...p, profileFrame: e.target.value }))}
-          />
-        </label>
-        <label className="space-y-1">
-          <span className="text-sm text-muted-foreground">Profil arka plan URL</span>
-          <input
-            className={inputClass}
-            value={form.profileBackground}
-            onChange={(e) => setForm((p) => ({ ...p, profileBackground: e.target.value }))}
+            onChange={(e) =>
+              setForm((p) => ({ ...p, profileFrame: e.target.value }))
+            }
           />
         </label>
       </div>

@@ -37,7 +37,7 @@ export function OnboardingForm({
   return (
     <div className="space-y-4 rounded-xl border border-border bg-card/60 p-4">
       <label className="block text-sm">
-        <span className="text-muted-foreground">Vergi no / KYC referans (demo)</span>
+        <span className="text-muted-foreground">Vergi no / KYC referans</span>
         <input
           className="mt-1 w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
           value={taxId}
@@ -61,7 +61,7 @@ export function OnboardingForm({
       </Button>
       {initial.kycStatus === "UNVERIFIED" ? (
         <p className="text-xs text-muted-foreground">
-          Gercek KYC icin odeme partneri entegrasyonu sonraki fazda baglanir.
+          Kimlik ve vergi dogrulama asamalari hesap durumuna gore panelde ilerler.
         </p>
       ) : null}
     </div>

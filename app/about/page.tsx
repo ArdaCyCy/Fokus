@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { LEGAL_PAGES } from "@/lib/mock/platform";
+import { LEGAL_PAGES } from "@/lib/legal/pages";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function AboutPage() {

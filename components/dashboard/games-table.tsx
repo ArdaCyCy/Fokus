@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -8,7 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-type Status = "DRAFT" | "PENDING" | "PUBLISHED";
+type Status = "DRAFT" | "PENDING" | "PUBLISHED" | "REJECTED";
 
 type ApiDeveloperGameRow = {
   id: string;
@@ -35,12 +36,14 @@ type DisplayRow = {
 function statusLabel(status: Status): string {
   if (status === "PUBLISHED") return "Yayında";
   if (status === "PENDING") return "Onay bekliyor";
+  if (status === "REJECTED") return "Reddedildi";
   return "Taslak";
 }
 
 function statusVariant(status: Status): "success" | "secondary" | "outline" {
   if (status === "PUBLISHED") return "success";
   if (status === "PENDING") return "secondary";
+  if (status === "REJECTED") return "outline";
   return "outline";
 }
 
@@ -129,6 +132,7 @@ export function DashboardGamesTable() {
             <TabsTrigger value="DRAFT">Taslak</TabsTrigger>
             <TabsTrigger value="PENDING">Onay</TabsTrigger>
             <TabsTrigger value="PUBLISHED">Yayında</TabsTrigger>
+            <TabsTrigger value="REJECTED">Reddedildi</TabsTrigger>
           </TabsList>
           <TabsContent value={tab} className="pt-4">
             <Table>
@@ -175,15 +179,26 @@ export function DashboardGamesTable() {
                     <TableCell>{row.updatedAt}</TableCell>
                     <TableCell className="text-right">
                       <div className="inline-flex flex-wrap justify-end gap-2">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() =>
-                            void updateStatus(row.id, row.status === "DRAFT" ? "PENDING" : "DRAFT")
-                          }
-                        >
-                          {row.status === "DRAFT" ? "Onaya gönder" : "Taslağa al"}
+                        <Button size="sm" variant="secondary" asChild>
+                          <Link href={`/dashboard/games/${row.id}/edit`}>
+                            Düzenle
+                          </Link>
                         </Button>
+                        {row.status !== "PUBLISHED" ? (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => {
+                              const next =
+                                row.status === "PENDING" ? "DRAFT" : "PENDING";
+                              void updateStatus(row.id, next);
+                            }}
+                          >
+                            {row.status === "PENDING"
+                              ? "Taslağa al"
+                              : "Onaya gönder"}
+                          </Button>
+                        ) : null}
                         <Button
                           size="sm"
                           variant="destructive"

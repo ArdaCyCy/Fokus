@@ -56,7 +56,7 @@ export default async function CartPage({
           <div className="rounded-xl border border-dashed border-white/10 bg-card/50 px-6 py-16 text-center">
             <p className="text-muted-foreground">Sepetin boş.</p>
             <Button asChild className="mt-6">
-              <Link href="/games">Mağazayı gez</Link>
+              <Link href="/">Mağazayı gez</Link>
             </Button>
           </div>
         ) : (
@@ -211,7 +211,7 @@ export default async function CartPage({
                   className="bg-[hsl(88_54%_40%)] font-semibold text-[hsl(222_22%_8%)] hover:bg-[hsl(88_54%_46%)]"
                 />
                 <Button variant="outline" className="w-full" asChild>
-                  <Link href="/games">Alışverişe devam et</Link>
+                  <Link href="/">Alışverişe devam et</Link>
                 </Button>
               </CardContent>
             </Card>

@@ -149,7 +149,7 @@ export default async function SettingsPage() {
                 </ul>
                 <p>
                   Clerk ile girişte oturum ve cihaz yönetimi büyük ölçüde Clerk
-                  kullanıcı profilinde; demo modunda parola bu sayfadaki hesap
+                  kullanıcı profilinde; harici kimlik sistemi kullanılmıyorsa parola bu sayfadaki hesap
                   formundan veya{" "}
                   <code className="rounded bg-muted px-1 text-foreground">
                     PATCH /api/account/settings
@@ -185,7 +185,7 @@ export default async function SettingsPage() {
                   ağırlıkları yol haritasında.
                 </p>
                 <Button asChild variant="outline" size="sm">
-                  <Link href="/games">Mağazaya git</Link>
+                  <Link href="/">Mağazaya git</Link>
                 </Button>
               </CardContent>
             </Card>

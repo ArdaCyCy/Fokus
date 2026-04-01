@@ -28,7 +28,7 @@ export default async function WishlistPage() {
           <div className="rounded-xl border border-dashed border-white/10 bg-card/50 px-6 py-16 text-center">
             <p className="text-muted-foreground">Listen boş.</p>
             <Button asChild className="mt-6">
-              <Link href="/games">Mağazayı keşfet</Link>
+              <Link href="/">Mağazayı keşfet</Link>
             </Button>
           </div>
         ) : (

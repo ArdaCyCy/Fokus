@@ -186,7 +186,7 @@ export default async function ProfilePage() {
                 <div className="rounded-xl border border-dashed border-white/10 p-10 text-center text-sm text-muted-foreground">
                   Kütüphanende oyun yok.
                   <Button asChild className="mx-auto mt-4 block">
-                    <Link href="/games">Mağaza</Link>
+                    <Link href="/">Mağaza</Link>
                   </Button>
                 </div>
               ) : (

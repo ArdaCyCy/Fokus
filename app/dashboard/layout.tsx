@@ -9,11 +9,19 @@ import { DashboardSignOut } from "@/components/dashboard/dashboard-sign-out";
 import { DashboardSidebar, MobileDashboardSidebar } from "@/components/layout/dashboard-sidebar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
+export const dynamic = "force-dynamic";
+
 export default async function DashboardLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   const clerkOn = isClerkEnabled();
-  const user = await getOptionalAppUser();
+  let user: Awaited<ReturnType<typeof getOptionalAppUser>>;
+  try {
+    user = await getOptionalAppUser();
+  } catch (e) {
+    console.error("[Fokus] Dashboard: kullanıcı yüklenemedi:", e);
+    redirect("/sign-in?redirect_url=%2Fdashboard");
+  }
 
   if (!user) {
     redirect("/sign-in?redirect_url=%2Fdashboard");

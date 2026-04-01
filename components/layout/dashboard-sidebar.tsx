@@ -2,7 +2,16 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, Home, Gamepad2, Upload, DollarSign, Settings, Newspaper, ClipboardList } from "lucide-react";
+import {
+  Menu,
+  Home,
+  Gamepad2,
+  Upload,
+  DollarSign,
+  Settings,
+  Newspaper,
+  ClipboardList,
+} from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";

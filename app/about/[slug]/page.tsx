@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LEGAL_TOPIC_COPY } from "@/lib/legal/topic-copy";
-import { LEGAL_PAGES } from "@/lib/mock/platform";
+import { LEGAL_PAGES } from "@/lib/legal/pages";
 
 export function generateStaticParams() {
   return LEGAL_PAGES.map((p) => ({ slug: p.slug }));

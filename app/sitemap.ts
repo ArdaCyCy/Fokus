@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 
 import { getAppBaseUrl } from "@/lib/commerce/checkout-config";
 import { db } from "@/lib/db";
-import { LEGAL_PAGES } from "@/lib/mock/platform";
+import { LEGAL_PAGES } from "@/lib/legal/pages";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = getAppBaseUrl();

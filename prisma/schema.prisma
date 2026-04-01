@@ -98,6 +98,12 @@ enum WalletTxnType {
   MARKET_SELL
 }
 
+enum GiftStatus {
+  PENDING
+  CLAIMED
+  CANCELED
+}
+
 model User {
   id        String   @id @default(cuid())
   clerkId   String   @unique
@@ -146,6 +152,8 @@ model User {
   iyzicoPaymentIntents IyzicoPaymentIntent[]
   friendMessagesSent     FriendMessage[] @relation("FriendMsgOut")
   friendMessagesReceived FriendMessage[] @relation("FriendMsgIn")
+  giftsSent      Gift[] @relation("GiftSender")
+  giftsReceived  Gift[] @relation("GiftRecipient")
 
   @@index([clerkId])
 }
@@ -257,6 +265,7 @@ model Game {
   inventoryItems InventoryItem[]
   achievements Achievement[]
   cloudSaves CloudSaveMetadata[]
+  gifts      Gift[]
 
   @@index([isPublished, createdAt])
   @@index([developerSlug])
@@ -641,4 +650,28 @@ model MarketListing {
   inventoryItem InventoryItem @relation(fields: [inventoryItemId], references: [id], onDelete: Cascade)
 
   @@index([soldAt, createdAt])
+}
+
+model Gift {
+  id             String     @id @default(cuid())
+  claimToken     String     @unique @default(cuid())
+  senderId       String
+  recipientId    String?
+  recipientEmail String
+  gameId         String
+  amountCents    Int
+  currency       String     @default("TRY")
+  status         GiftStatus @default(PENDING)
+  note           String?
+  claimedAt      DateTime?
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+
+  sender         User       @relation("GiftSender", fields: [senderId], references: [id], onDelete: Cascade)
+  recipient      User?      @relation("GiftRecipient", fields: [recipientId], references: [id], onDelete: SetNull)
+  game           Game       @relation(fields: [gameId], references: [id], onDelete: Cascade)
+
+  @@index([senderId, createdAt])
+  @@index([recipientEmail, status, createdAt])
+  @@index([recipientId, createdAt])
 }

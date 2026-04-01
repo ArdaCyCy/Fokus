@@ -34,6 +34,8 @@ export function getClientIp(req: NextRequest): string {
 export async function rateLimitResponse(
   req: NextRequest
 ): Promise<NextResponse | null> {
+  /** HTML sayfalarında Redis beklenmesin (Vercel’de ilk bayt süresi ve gezinme hızı). Yalnız API korumalı. */
+  if (!req.nextUrl.pathname.startsWith("/api")) return null;
   if (req.nextUrl.pathname.startsWith("/api/webhooks")) return null;
   const rl = getMiddlewareRatelimit();
   if (!rl) return null;

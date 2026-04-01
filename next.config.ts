@@ -3,6 +3,22 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
+  trailingSlash: false,
+  async redirects() {
+    return [
+      {
+        source: "/developer/dashboard",
+        destination: "/dashboard",
+        permanent: false,
+      },
+      {
+        source: "/gelistirici/panel",
+        destination: "/dashboard",
+        permanent: false,
+      },
+      { source: "/kutuphane", destination: "/library", permanent: false },
+    ];
+  },
   serverExternalPackages: ["iyzipay"],
   /** Next 15: yalnızca `false` veya nesne; `true` geçersiz. */
   devIndicators: false,

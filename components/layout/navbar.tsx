@@ -16,21 +16,19 @@ import {
 } from "@/components/ui/sheet";
 import {
   NavCommunityItem,
+  NavFriendsItem,
   NavLibraryItem,
 } from "@/components/layout/nav-hover-menus";
 import { NavAuthSection } from "@/components/layout/nav-user-hud";
 
 /** Mobil menü sırası: Mağaza → Haberler → Kütüphane → Arkadaşlar → Topluluk → Profil */
 const primaryNavLinks = [
-  { href: "/games", label: "Mağaza" },
+  { href: "/", label: "Mağaza" },
   { href: "/news", label: "Haberler" },
   { href: "/library", label: "Kütüphane" },
   { href: "/friends", label: "Arkadaşlar" },
   { href: "/community", label: "Topluluk" },
   { href: "/profile", label: "Profil" },
-] as const;
-
-const moreNavLinks = [
   { href: "/dashboard", label: "Geliştirici paneli" },
 ] as const;
 
@@ -55,23 +53,23 @@ export function Navbar() {
     <header className="nav-bar sticky top-0 z-40 w-full">
       <div className="container-shell flex h-[52px] items-center justify-between gap-2 md:h-14 md:gap-4">
         <div className="flex min-w-0 items-center gap-3 md:gap-5">
-          <Link
-            href="/"
+          <span
             className={cn(
-              "shrink-0 font-heading text-lg font-bold tracking-tight text-accent transition md:text-xl",
-              pathname === "/" &&
+              "shrink-0 cursor-default select-none font-heading text-lg font-bold tracking-tight text-accent md:text-xl",
+              (pathname === "/" || pathname.startsWith("/games")) &&
                 "drop-shadow-[0_0_12px_hsl(var(--accent)/0.45)]"
             )}
+            aria-label="Fokus"
           >
             Fokus
-          </Link>
+          </span>
           <nav
             className="hidden min-w-0 items-center gap-0.5 md:flex"
             aria-label="Ana"
           >
             <Link
-              href="/games"
-              className={navLinkClass(navItemActive(pathname, "/games"))}
+              href="/"
+              className={navLinkClass(navItemActive(pathname, "/"))}
             >
               Mağaza
             </Link>
@@ -82,18 +80,19 @@ export function Navbar() {
               Haberler
             </Link>
             <NavLibraryItem active={navItemActive(pathname, "/library")} />
-            <Link
-              href="/friends"
-              className={navLinkClass(navItemActive(pathname, "/friends"))}
-            >
-              Arkadaşlar
-            </Link>
+            <NavFriendsItem active={navItemActive(pathname, "/friends")} />
             <NavCommunityItem active={navItemActive(pathname, "/community")} />
             <Link
               href="/profile"
               className={navLinkClass(navItemActive(pathname, "/profile"))}
             >
               Profil
+            </Link>
+            <Link
+              href="/dashboard"
+              className={navLinkClass(navItemActive(pathname, "/dashboard"))}
+            >
+              Geliştirici
             </Link>
           </nav>
         </div>
@@ -166,25 +165,6 @@ export function Navbar() {
                 >
                   → Topluluk pazarı
                 </Link>
-                <p className="px-3 pt-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                  Diğer
-                </p>
-                {moreNavLinks.map(({ href, label }) => {
-                  const active = navItemActive(pathname, href);
-                  return (
-                    <Link
-                      key={href}
-                      href={href}
-                      onClick={() => setOpen(false)}
-                      className={cn(
-                        "rounded-lg px-3 py-2.5 text-sm font-medium",
-                        active ? "bg-white/[0.07] text-accent" : "hover:bg-muted"
-                      )}
-                    >
-                      {label}
-                    </Link>
-                  );
-                })}
               </nav>
               <div className="mt-auto border-t border-border pt-4">
                 <NavAuthSection />

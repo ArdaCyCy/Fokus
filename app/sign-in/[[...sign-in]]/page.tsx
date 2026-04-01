@@ -24,14 +24,19 @@ export default async function SignInPage({ searchParams }: PageProps) {
           <div className="mt-4">
             <DemoSignInForm redirectTo={redirectTo} />
           </div>
-          <div className="mt-4 text-sm text-muted-foreground">
-            Hesabın yok mu?{" "}
-            <Link
-              href={`/sign-up?redirect_url=${encodeURIComponent(redirectTo)}`}
-              className="text-accent hover:underline"
-            >
-              Kayıt ol
+          <div className="mt-4 flex flex-wrap gap-x-4 gap-y-2 text-sm text-muted-foreground">
+            <Link href="/forgot-password" className="text-accent hover:underline">
+              Şifremi unuttum
             </Link>
+            <span>
+              Hesabın yok mu?{" "}
+              <Link
+                href={`/sign-up?redirect_url=${encodeURIComponent(redirectTo)}`}
+                className="text-accent hover:underline"
+              >
+                Kayıt ol
+              </Link>
+            </span>
           </div>
         </div>
       </div>
@@ -39,7 +44,7 @@ export default async function SignInPage({ searchParams }: PageProps) {
   }
 
   return (
-    <div className="mx-auto flex min-h-[70dvh] max-w-6xl items-center justify-center px-4 py-10">
+    <div className="mx-auto flex min-h-[70dvh] max-w-6xl flex-col items-center justify-center gap-4 px-4 py-10">
       <SignIn
         forceRedirectUrl={redirectTo}
         fallbackRedirectUrl={redirectTo}
@@ -56,6 +61,12 @@ export default async function SignInPage({ searchParams }: PageProps) {
           },
         }}
       />
+      <Link
+        href="/forgot-password"
+        className="text-sm text-muted-foreground hover:text-accent hover:underline"
+      >
+        Şifremi unuttum
+      </Link>
     </div>
   );
 }

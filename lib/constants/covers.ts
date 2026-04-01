@@ -1,7 +1,8 @@
-/** Kapak yoksa veya görsel yüklenemezse kullanılan varsayılan mağaza görseli (donanım / konsol fotoğrafı değil). */
+/** Kapak yoksa veya görsel yüklenemezse — picsum (Unsplash sık 404). */
 export const FALLBACK_GAME_COVER =
-  "https://images.unsplash.com/photo-1509223197845-458d87318791?w=1200&q=80";
+  "https://picsum.photos/seed/fokus-default-cover/1200/675";
 
-export function fallbackCoverWithWidth(w: number, q = 80): string {
-  return `https://images.unsplash.com/photo-1509223197845-458d87318791?w=${w}&q=${q}`;
+export function fallbackCoverWithWidth(w: number): string {
+  const h = Math.max(1, Math.round((w * 9) / 16));
+  return `https://picsum.photos/seed/fokus-fallback-${w}/${w}/${h}`;
 }

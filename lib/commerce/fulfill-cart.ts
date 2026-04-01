@@ -13,7 +13,8 @@ export type CheckoutLine = {
   developerSlug: string | null;
 };
 
-const DEFAULT_FEE_BPS = 1500;
+/** Varsayılan Fokus komisyonu: %30 (basis points). `PLATFORM_FEE_BPS` ile geçersiz kıl. */
+const DEFAULT_FEE_BPS = 3000;
 
 export function platformFeeBps(): number {
   const raw = process.env.PLATFORM_FEE_BPS;

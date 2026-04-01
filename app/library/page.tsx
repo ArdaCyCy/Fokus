@@ -42,6 +42,19 @@ export default async function LibraryPage({
           description="Satın aldığın oyunlar, indirme kuyruğu ve demolar. Mağaza sayfasından yeni başlıklar ekleyebilirsin."
         />
 
+        <Card className="mb-6 border-dashed border-white/[0.12] bg-card/50">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base">Oyun hediye et</CardTitle>
+          </CardHeader>
+          <CardContent className="text-sm text-muted-foreground">
+            Cüzdan bakiyen ile hediye satın alabilir ve alıcıya claim linki gönderebilirsin.{" "}
+            <Link href="/gifts" className="text-accent hover:underline">
+              Hediye merkezine git
+            </Link>
+            .
+          </CardContent>
+        </Card>
+
         <LibraryTabsShell className="space-y-6">
           <TabsList className="h-auto flex-wrap gap-1 border border-white/[0.06] bg-card/90 p-1">
             <TabsTrigger
@@ -85,7 +98,7 @@ export default async function LibraryPage({
                   </Button>
                 ) : null}
                 <Button variant="secondary" size="sm" asChild>
-                  <Link href="/games">Mağazaya git</Link>
+                  <Link href="/">Mağazaya git</Link>
                 </Button>
               </div>
             </div>
@@ -96,7 +109,7 @@ export default async function LibraryPage({
                   Kütüphanen boş. İlk oyununu mağazadan seç.
                 </p>
                 <Button asChild className="mt-6">
-                  <Link href="/games">Keşfet</Link>
+                  <Link href="/">Keşfet</Link>
                 </Button>
               </div>
             ) : (

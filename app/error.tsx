@@ -32,6 +32,11 @@ export default function ErrorBoundary({
           <pre className="mt-2 max-h-48 w-full overflow-auto rounded-md border border-border bg-muted/50 p-3 text-left text-xs text-muted-foreground">
             {error.message}
           </pre>
+        ) : error.digest ? (
+          <p className="text-xs text-muted-foreground">
+            Referans: <code className="rounded bg-muted px-1 py-0.5">{error.digest}</code>{" "}
+            (Vercel log / destek için)
+          </p>
         ) : null}
       </div>
       <div className="flex flex-wrap items-center justify-center gap-3">

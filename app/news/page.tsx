@@ -94,7 +94,7 @@ export default async function NewsPage() {
             <div className="rounded-xl border border-dashed border-white/10 py-12 text-center text-sm text-muted-foreground">
               Henüz haber yok.
               <Button asChild variant="outline" className="mx-auto mt-4 block">
-                <Link href="/games">Mağazaya dön</Link>
+                <Link href="/">Mağazaya dön</Link>
               </Button>
             </div>
           ) : null}

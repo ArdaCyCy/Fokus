@@ -13,7 +13,7 @@ export function FeaturedCarousel({ games }: { games: GameCardData[] }) {
     return (
       <p className="rounded-xl border border-dashed border-white/[0.1] bg-card/40 px-4 py-10 text-center text-sm text-muted-foreground">
         Henüz vitrin için yayımlanmış oyun yok.{" "}
-        <Link href="/games" className="text-accent underline-offset-4 hover:underline">
+        <Link href="/" className="text-accent underline-offset-4 hover:underline">
           Mağazaya göz at
         </Link>
         .

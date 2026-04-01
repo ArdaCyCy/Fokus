@@ -255,7 +255,7 @@ export default async function GameDetailPage({
     game.description ||
     "_Henüz açıklama eklenmedi._";
 
-  const devSearchHref = `/games?q=${encodeURIComponent(game.developerName)}`;
+  const devSearchHref = `/?q=${encodeURIComponent(game.developerName)}`;
   const primaryCat = game.categories[0]?.category;
 
   const specKeys =
@@ -282,7 +282,7 @@ export default async function GameDetailPage({
       <div className="mx-auto max-w-6xl px-4">
         <nav className="mb-4 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-muted-foreground">
           <Link
-            href="/games"
+            href="/"
             className="text-accent transition hover:underline"
           >
             Mağaza
@@ -291,7 +291,7 @@ export default async function GameDetailPage({
             <>
               <span aria-hidden>/</span>
               <Link
-                href={`/games?cat=${encodeURIComponent(primaryCat.slug)}`}
+                href={`/?cat=${encodeURIComponent(primaryCat.slug)}`}
                 className="transition hover:text-foreground hover:underline"
               >
                 {primaryCat.name}
@@ -660,7 +660,7 @@ export default async function GameDetailPage({
                       {game.categories.map((gc) => (
                         <Link
                           key={gc.category.id}
-                          href={`/games?cat=${encodeURIComponent(gc.category.slug)}`}
+                          href={`/?cat=${encodeURIComponent(gc.category.slug)}`}
                         >
                           <Badge
                             variant="secondary"

@@ -11,7 +11,20 @@ import {
 import { gameListRowToCardData } from "@/lib/mappers/game-card";
 import { GameMiniRail } from "@/components/games/game-mini-rail";
 
-export async function StoreBrowseSections() {
+type ListBase = "/" | "/games";
+
+function listQs(base: ListBase, search: string) {
+  const qs = search.replace(/^\?/, "");
+  if (!qs) return base;
+  return `${base}?${qs}`;
+}
+
+export async function StoreBrowseSections({
+  listBasePath = "/games",
+}: {
+  listBasePath?: ListBase;
+} = {}) {
+  const b = listBasePath;
   const now = new Date();
   const weekSince = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
   const monthSince = new Date(now);
@@ -95,28 +108,30 @@ export async function StoreBrowseSections() {
         title="Yeni çıkanlar"
         subtitle="Son yayımlanan yapımlar"
         games={newCards}
-        seeAllHref="/games?mode=new"
+        seeAllHref={listQs(b, "mode=new")}
       />
       <GameMiniRail
         title="Çok satanlar"
         subtitle="İnceleme ve etkileşime göre öne çıkanlar"
         games={popularCards}
-        seeAllHref="/games?mode=popular"
+        seeAllHref={listQs(b, "mode=popular")}
       />
       {upcomingCards.length > 0 ? (
         <GameMiniRail
           title="Çok yakında"
           subtitle="Planlı çıkış tarihi olan oyunlar"
           games={upcomingCards}
-          seeAllHref="/games"
+          seeAllHref={b}
         />
       ) : null}
-      <GameMiniRail
-        title="Demolar ve ücretsiz"
-        subtitle="Fiyatı sıfır veya demo içeren başlıklar"
-        games={demoCards}
-        seeAllHref="/search?q=demo"
-      />
+      {demoCards.length > 0 ? (
+        <GameMiniRail
+          title="Ucretsiz ve deneme surumleri"
+          subtitle="Fiyati sifir olan veya deneme surumu bulunan basliklar"
+          games={demoCards}
+          seeAllHref="/search"
+        />
+      ) : null}
 
       <p className="mb-4 mt-10 text-xs font-semibold uppercase tracking-[0.15em] text-muted-foreground">
         Sıralamalar ve istatistikler
@@ -125,19 +140,19 @@ export async function StoreBrowseSections() {
         title="Haftanın en popülerleri"
         subtitle="Son 7 günde en çok inceleme alanlar"
         games={weekCards}
-        seeAllHref="/games?mode=popular"
+        seeAllHref={listQs(b, "mode=popular")}
       />
       <GameMiniRail
         title="Ayın en popülerleri"
         subtitle="Son 30 güne göre inceleme yoğunluğu"
         games={monthCards}
-        seeAllHref="/games?mode=popular"
+        seeAllHref={listQs(b, "mode=popular")}
       />
       <GameMiniRail
         title="Yılın en popülerleri"
         subtitle="Son 12 aya göre topluluk ilgisi"
         games={yearCards}
-        seeAllHref="/games?mode=popular"
+        seeAllHref={listQs(b, "mode=popular")}
       />
 
       {dlcCards.length > 0 ? (
@@ -145,7 +160,7 @@ export async function StoreBrowseSections() {
           title="DLC ve eklentiler"
           subtitle="Ana oyuna bağlı yayımlanmış içerikler"
           games={dlcCards}
-          seeAllHref="/games"
+          seeAllHref={b}
         />
       ) : (
         <div className="mt-8 rounded-xl border border-dashed border-white/10 bg-white/[0.02] px-4 py-6 text-center text-sm text-muted-foreground">
@@ -153,7 +168,7 @@ export async function StoreBrowseSections() {
           <p className="mt-1 text-xs">
             Geliştiriciler ana oyunlarına DLC bağladığında bu şerit otomatik
             dolar. Ana oyunları{" "}
-            <Link href="/games" className="text-accent underline">
+            <Link href={b} className="text-accent underline">
               mağazadan
             </Link>{" "}
             keşfet.

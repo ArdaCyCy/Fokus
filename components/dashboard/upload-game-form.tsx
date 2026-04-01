@@ -6,12 +6,14 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 
 type DevGameOption = { id: string; title: string };
+type CatRow = { slug: string; name: string };
 
 export function UploadGameForm() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [baseGames, setBaseGames] = useState<DevGameOption[]>([]);
+  const [categories, setCategories] = useState<CatRow[]>([]);
   const [form, setForm] = useState({
     title: "",
     shortDescription: "",
@@ -19,7 +21,13 @@ export function UploadGameForm() {
     priceTl: "99",
     coverImageUrl: "",
     parentGameId: "",
+    platformsJson: '{"windows":true,"mac":false,"linux":false}',
+    systemRequirementsJson:
+      '{"minimum":{"İşletim Sistemi":"Windows 10","Bellek":"8 GB RAM","Depolama":"10 GB"}}',
+    screenshotsText: "",
+    isTurkishMade: false,
   });
+  const [selectedCats, setSelectedCats] = useState<string[]>([]);
 
   useEffect(() => {
     let ok = true;
@@ -28,14 +36,27 @@ export function UploadGameForm() {
       .then((j: { games?: { id: string; title: string }[] }) => {
         if (!ok) return;
         setBaseGames(
-          (j.games ?? []).map((g) => ({ id: g.id, title: g.title }))
+          (j.games ?? []).map((g) => ({ id: g.id, title: g.title })),
         );
+      })
+      .catch(() => {});
+    fetch("/api/categories", { cache: "no-store" })
+      .then((r) => r.json())
+      .then((j: { categories?: CatRow[] }) => {
+        if (!ok) return;
+        setCategories(j.categories ?? []);
       })
       .catch(() => {});
     return () => {
       ok = false;
     };
   }, []);
+
+  function toggleCat(slug: string) {
+    setSelectedCats((prev) =>
+      prev.includes(slug) ? prev.filter((s) => s !== slug) : [...prev, slug],
+    );
+  }
 
   async function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -44,6 +65,35 @@ export function UploadGameForm() {
     try {
       const priceCents = Math.round(Number(form.priceTl) * 100);
       const parentGameId = form.parentGameId.trim() || undefined;
+
+      let platforms: unknown;
+      try {
+        platforms = JSON.parse(form.platformsJson || "{}");
+      } catch {
+        throw new Error("Platform alanı geçerli JSON olmalı.");
+      }
+      let systemRequirements: unknown;
+      try {
+        systemRequirements = JSON.parse(form.systemRequirementsJson || "{}");
+      } catch {
+        throw new Error("Sistem gereksinimleri geçerli JSON olmalı.");
+      }
+
+      const lines = form.screenshotsText
+        .split("\n")
+        .map((s) => s.trim())
+        .filter(Boolean);
+      const screenshotUrls = lines.length ? lines : undefined;
+      if (screenshotUrls) {
+        for (const u of screenshotUrls) {
+          try {
+            new URL(u);
+          } catch {
+            throw new Error(`Geçersiz ekran görüntüsü URL: ${u}`);
+          }
+        }
+      }
+
       const res = await fetch("/api/developer/games", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -54,6 +104,11 @@ export function UploadGameForm() {
           priceCents,
           coverImageUrl: form.coverImageUrl,
           ...(parentGameId ? { parentGameId } : {}),
+          categorySlugs: selectedCats.length ? selectedCats : undefined,
+          platforms,
+          systemRequirements,
+          screenshotUrls,
+          isTurkishMade: form.isTurkishMade,
         }),
       });
       const json = await res.json();
@@ -103,10 +158,40 @@ export function UploadGameForm() {
             </option>
           ))}
         </select>
-        <p className="text-xs text-muted-foreground">
-          Sadece bu hesapta oluşturduğun oyunlar listelenir.
-        </p>
       </div>
+
+      {categories.length > 0 ? (
+        <div className="space-y-2">
+          <p className="text-sm text-muted-foreground">Kategoriler</p>
+          <div className="flex flex-wrap gap-2">
+            {categories.map((c) => (
+              <label
+                key={c.slug}
+                className="flex cursor-pointer items-center gap-2 rounded-md border border-white/[0.08] bg-background/80 px-2 py-1 text-xs"
+              >
+                <input
+                  type="checkbox"
+                  checked={selectedCats.includes(c.slug)}
+                  onChange={() => toggleCat(c.slug)}
+                />
+                {c.name}
+              </label>
+            ))}
+          </div>
+        </div>
+      ) : null}
+
+      <label className="flex cursor-pointer items-center gap-2 text-sm text-muted-foreground">
+        <input
+          type="checkbox"
+          checked={form.isTurkishMade}
+          onChange={(e) =>
+            setForm((p) => ({ ...p, isTurkishMade: e.target.checked }))
+          }
+        />
+        Türk yapımı
+      </label>
+
       <div className="space-y-2">
         <label
           htmlFor="shortDescription"
@@ -177,6 +262,49 @@ export function UploadGameForm() {
           />
         </div>
       </div>
+
+      <div className="space-y-2">
+        <label className="text-sm text-muted-foreground">
+          Ekran görüntüsü URL’leri (satır başına bir adet)
+        </label>
+        <textarea
+          className="w-full rounded-md border border-border bg-background p-3 font-mono text-xs"
+          rows={4}
+          value={form.screenshotsText}
+          onChange={(e) =>
+            setForm((p) => ({ ...p, screenshotsText: e.target.value }))
+          }
+          placeholder="https://..."
+        />
+      </div>
+
+      <div className="space-y-2">
+        <label className="text-sm text-muted-foreground">
+          Platformlar (JSON)
+        </label>
+        <textarea
+          className="w-full rounded-md border border-border bg-background p-3 font-mono text-xs"
+          rows={3}
+          value={form.platformsJson}
+          onChange={(e) =>
+            setForm((p) => ({ ...p, platformsJson: e.target.value }))
+          }
+        />
+      </div>
+      <div className="space-y-2">
+        <label className="text-sm text-muted-foreground">
+          Sistem gereksinimleri (JSON)
+        </label>
+        <textarea
+          className="w-full rounded-md border border-border bg-background p-3 font-mono text-xs"
+          rows={5}
+          value={form.systemRequirementsJson}
+          onChange={(e) =>
+            setForm((p) => ({ ...p, systemRequirementsJson: e.target.value }))
+          }
+        />
+      </div>
+
       {error ? <p className="text-sm text-destructive">{error}</p> : null}
       <Button disabled={loading} type="submit">
         {loading ? "Kaydediliyor…" : "Oyunu oluştur"}

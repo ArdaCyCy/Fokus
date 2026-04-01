@@ -1,10 +1,12 @@
 import Link from "next/link";
 
-import { LEGAL_PAGES } from "@/lib/mock/platform";
+import { LEGAL_PAGES } from "@/lib/legal/pages";
 
 const essentials = [
   { href: "/settings", label: "Ayarlar" },
   { href: "/support", label: "Destek" },
+  { href: "/help", label: "Yardım" },
+  { href: "/become-developer", label: "Geliştirici ol" },
   { href: "/about", label: "Fokus hakkında" },
 ] as const;
 

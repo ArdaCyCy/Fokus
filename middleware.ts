@@ -25,6 +25,12 @@ const isPublicRoute = createRouteMatcher([
   "/api/payments/iyzico/callback(.*)",
   "/api/uploadthing(.*)",
   "/sso-callback(.*)",
+  "/developer",
+  "/gelistirici",
+  "/forgot-password",
+  "/help",
+  "/become-developer",
+  "/gifts/claim(.*)",
 ]);
 
 function isPrivateOrLocalHost(host: string): boolean {
@@ -146,7 +152,19 @@ export default clerkOn
         return limited;
       }
 
-      if (!isPublicRoute(req)) await auth.protect();
+      if (!isPublicRoute(req)) {
+        const { userId } = await auth();
+        if (!userId) {
+          const redirectUrl = encodeURIComponent(req.nextUrl.pathname + req.nextUrl.search);
+          const to = new URL(`/sign-in?redirect_url=${redirectUrl}`, req.url);
+          const redirectRes = NextResponse.redirect(to);
+          Object.entries(securityHeaders).forEach(([k, v]) =>
+            redirectRes.headers.set(k, v),
+          );
+          applyAbCookie(redirectRes, req);
+          return redirectRes;
+        }
+      }
 
       const res = NextResponse.next();
       Object.entries(securityHeaders).forEach(([k, v]) => res.headers.set(k, v));

@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Download, LayoutGrid, Store } from "lucide-react";
+import { Download, LayoutGrid, MessageCircle, Store, Users } from "lucide-react";
 
 import { fallbackCoverWithWidth } from "@/lib/constants/covers";
 import { cn } from "@/lib/utils";
@@ -130,6 +130,82 @@ export function NavLibraryItem({ active }: { active: boolean }) {
                   </ul>
                 )}
               </div>
+            </div>
+          </div>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+export function NavFriendsItem({ active }: { active: boolean }) {
+  const { open, onEnter, onLeave } = useHoverOpen();
+  const [onlineCount, setOnlineCount] = useState<number | null>(null);
+  const [signedIn, setSignedIn] = useState(false);
+
+  useEffect(() => {
+    if (!open) return;
+    let ok = true;
+    fetch("/api/nav/friends-preview")
+      .then((r) => r.json())
+      .then((d: { onlineCount?: number; signedIn?: boolean }) => {
+        if (!ok) return;
+        setOnlineCount(typeof d.onlineCount === "number" ? d.onlineCount : 0);
+        setSignedIn(Boolean(d.signedIn));
+      })
+      .catch(() => {
+        if (!ok) return;
+        setOnlineCount(0);
+        setSignedIn(false);
+      });
+    return () => {
+      ok = false;
+    };
+  }, [open]);
+
+  const statusLine = !signedIn
+    ? "Çevrim içi sayısı için giriş yap."
+    : onlineCount === null
+      ? "…"
+      : `${onlineCount} arkadaşın çevrim içi`;
+
+  return (
+    <div className="relative" onMouseEnter={onEnter} onMouseLeave={onLeave}>
+      <Link
+        href="/friends"
+        className={cn(
+          linkBase,
+          active
+            ? "bg-white/[0.07] text-foreground shadow-[inset_0_-2px_0_0_hsl(var(--accent))]"
+            : "text-muted-foreground hover:bg-white/[0.04] hover:text-foreground"
+        )}
+      >
+        Arkadaşlar
+      </Link>
+      {open ? (
+        <div className="absolute left-0 top-full z-[70] w-[min(calc(100vw-2rem),380px)] pt-1.5">
+          <div className="rounded-xl border border-white/[0.1] bg-card p-4 shadow-2xl shadow-black/70">
+            <p className="mb-3 text-sm font-medium leading-snug text-foreground">
+              {statusLine}
+            </p>
+            <div className="flex flex-col gap-0.5 border-t border-white/[0.06] pt-3">
+              <p className="mb-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                Hızlı erişim
+              </p>
+              <Link
+                href="/friends"
+                className="flex items-center gap-2 rounded-md px-2 py-2 text-sm hover:bg-white/[0.06]"
+              >
+                <Users className="size-4 text-accent" />
+                Arkadaş listesi
+              </Link>
+              <Link
+                href="/friends"
+                className="flex items-center gap-2 rounded-md px-2 py-2 text-sm hover:bg-white/[0.06]"
+              >
+                <MessageCircle className="size-4 text-accent" />
+                Mesajlar
+              </Link>
             </div>
           </div>
         </div>

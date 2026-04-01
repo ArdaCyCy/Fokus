@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import {
   Card,
   CardContent,
@@ -63,6 +65,27 @@ export default async function DashboardOverviewPage() {
         description="Oyunlarının durumu, satış özeti ve son işlemler."
         className="mb-0"
       />
+
+      <section className="flex flex-wrap gap-3">
+        <Link
+          href="/dashboard/upload"
+          className="rounded-lg border border-white/[0.08] bg-card/80 px-4 py-2.5 text-sm font-medium text-foreground transition hover:border-accent/40 hover:bg-card"
+        >
+          Yeni oyun ekle
+        </Link>
+        <Link
+          href="/dashboard/games"
+          className="rounded-lg border border-white/[0.08] bg-card/80 px-4 py-2.5 text-sm font-medium text-foreground transition hover:border-accent/40 hover:bg-card"
+        >
+          Oyunlarımı yönet
+        </Link>
+        <Link
+          href="/dashboard/earnings"
+          className="rounded-lg border border-white/[0.08] bg-card/80 px-4 py-2.5 text-sm font-medium text-foreground transition hover:border-accent/40 hover:bg-card"
+        >
+          Kazançlarım
+        </Link>
+      </section>
 
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {stats.map((item) => (

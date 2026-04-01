@@ -1,8 +1,11 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { Prisma } from "@prisma/client";
 
 import { requireRole } from "@/lib/auth/permissions";
 import { db } from "@/lib/db";
+
+const jsonRecord = z.record(z.string(), z.unknown()).optional();
 
 const createSchema = z.object({
   title: z.string().min(2).max(120),
@@ -12,6 +15,11 @@ const createSchema = z.object({
   coverImageUrl: z.string().url().optional().or(z.literal("")),
   /** DLC / eklenti ise geliştiricinin başka bir oyununun id’si */
   parentGameId: z.string().optional(),
+  categorySlugs: z.array(z.string().min(1)).max(12).optional(),
+  platforms: jsonRecord,
+  systemRequirements: jsonRecord,
+  screenshotUrls: z.array(z.string().url()).max(16).optional(),
+  isTurkishMade: z.boolean().optional(),
 });
 
 const updateSchema = z.object({
@@ -26,6 +34,11 @@ const updateSchema = z.object({
   scheduledReleaseAt: z.string().datetime().nullable().optional(),
   buildScanNote: z.string().max(500).nullable().optional(),
   parentGameId: z.string().min(1).nullable().optional(),
+  categorySlugs: z.array(z.string().min(1)).max(12).optional(),
+  platforms: jsonRecord,
+  systemRequirements: jsonRecord,
+  screenshotUrls: z.array(z.string().url()).max(16).optional(),
+  isTurkishMade: z.boolean().optional(),
 });
 
 const deleteSchema = z.object({
@@ -46,6 +59,24 @@ async function resolveParentId(
     throw new Error("PARENT_NOT_FOUND");
   }
   return id;
+}
+
+async function syncGameCategories(
+  gameId: string,
+  slugs: string[] | undefined
+): Promise<void> {
+  if (slugs === undefined) return;
+  await db.gameCategory.deleteMany({ where: { gameId } });
+  if (slugs.length === 0) return;
+  const cats = await db.category.findMany({
+    where: { slug: { in: slugs } },
+    select: { id: true },
+  });
+  if (cats.length === 0) return;
+  await db.gameCategory.createMany({
+    data: cats.map((c) => ({ gameId, categoryId: c.id })),
+    skipDuplicates: true,
+  });
 }
 
 function slugify(title: string): string {
@@ -91,6 +122,11 @@ export async function POST(req: Request) {
     priceCents,
     coverImageUrl,
     parentGameId: parentRaw,
+    categorySlugs,
+    platforms,
+    systemRequirements,
+    screenshotUrls,
+    isTurkishMade,
   } = parsed.data;
 
   let parentGameId: string | undefined;
@@ -119,9 +155,21 @@ export async function POST(req: Request) {
       parentGameId: parentGameId ?? null,
       status: "DRAFT",
       isPublished: false,
+      platforms:
+        platforms === undefined
+          ? undefined
+          : (platforms as unknown as Prisma.InputJsonValue),
+      systemRequirements:
+        systemRequirements === undefined
+          ? undefined
+          : (systemRequirements as unknown as Prisma.InputJsonValue),
+      screenshotUrls: screenshotUrls ?? [],
+      isTurkishMade: isTurkishMade ?? false,
     },
     select: { id: true, slug: true },
   });
+
+  await syncGameCategories(game.id, categorySlugs);
 
   return NextResponse.json({ ok: true, game });
 }
@@ -134,8 +182,18 @@ export async function PATCH(req: Request) {
     return NextResponse.json({ error: "Geçersiz veri." }, { status: 400 });
   }
 
-  const { gameId, scheduledReleaseAt, buildScanNote, parentGameId, ...fields } =
-    parsed.data;
+  const {
+    gameId,
+    scheduledReleaseAt,
+    buildScanNote,
+    parentGameId,
+    categorySlugs,
+    platforms,
+    systemRequirements,
+    screenshotUrls,
+    isTurkishMade,
+    ...fields
+  } = parsed.data;
   const existing = await db.game.findFirst({
     where: { id: gameId, developerSlug: user.id },
     select: { id: true },
@@ -180,8 +238,19 @@ export async function PATCH(req: Request) {
       ...(resolvedParent !== undefined
         ? { parentGameId: resolvedParent }
         : {}),
+      ...(platforms !== undefined
+        ? { platforms: platforms as unknown as Prisma.InputJsonValue }
+        : {}),
+      ...(systemRequirements !== undefined
+        ? {
+            systemRequirements: systemRequirements as unknown as Prisma.InputJsonValue,
+          }
+        : {}),
+      ...(screenshotUrls !== undefined ? { screenshotUrls } : {}),
+      ...(isTurkishMade !== undefined ? { isTurkishMade } : {}),
     },
   });
+  await syncGameCategories(gameId, categorySlugs);
   if (buildScanNote !== undefined) {
     await db.developerProfile.upsert({
       where: { userId: user.id },
