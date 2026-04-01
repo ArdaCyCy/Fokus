@@ -50,16 +50,22 @@ export async function StoreGamesView({
   const page = Math.max(1, Number.parseInt(sp.page ?? "1", 10) || 1);
   const skip = (page - 1) * PAGE_SIZE;
 
-  const [rows, total] = await Promise.all([
-    getPublishedGames({
-      search: q,
-      categorySlug: catParam,
-      mode,
-      skip,
-      take: PAGE_SIZE,
-    }),
-    countPublishedGames({ search: q, categorySlug: catParam, mode }),
-  ]);
+  let rows: Awaited<ReturnType<typeof getPublishedGames>> = [];
+  let total = 0;
+  try {
+    [rows, total] = await Promise.all([
+      getPublishedGames({
+        search: q,
+        categorySlug: catParam,
+        mode,
+        skip,
+        take: PAGE_SIZE,
+      }),
+      countPublishedGames({ search: q, categorySlug: catParam, mode }),
+    ]);
+  } catch (e) {
+    console.error("[Fokus] Mağaza liste sorgusu başarısız:", e);
+  }
 
   const cards = rows.map(gameListRowToCardData);
   const hasMore = skip + rows.length < total;
@@ -67,62 +73,13 @@ export async function StoreGamesView({
 
   return (
     <>
-      <StoreHero seasonalBanner={seasonalBanner} />
+      <StoreHero
+        seasonalBanner={seasonalBanner}
+        basePath={basePath}
+        searchDefaults={{ q, catParam, mode }}
+      />
       <div className="min-h-screen pb-16 pt-8">
         <div className="mx-auto max-w-6xl px-4">
-          <div className="mb-10 rounded-xl border border-white/[0.06] bg-gradient-to-br from-card via-card/90 to-background p-6 shadow-lg shadow-black/25 md:p-8">
-            <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between lg:gap-10">
-              <div className="min-w-0 flex-1">
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">
-                  Keşfet
-                </p>
-                <h1 className="mt-2 font-heading text-3xl font-bold tracking-tight text-foreground md:text-4xl">
-                  Filtrele ve listele
-                </h1>
-                <p className="mt-3 max-w-2xl text-muted-foreground">
-                  Yayımlanmış indie oyunları keşfet; kategori ve sıralama ile süz.
-                  İstek listeni üst menüdeki kalp simgesinden aç. Gelişmiş arama
-                  için{" "}
-                  <Link
-                    href="/search"
-                    className="text-accent underline-offset-4 hover:underline"
-                  >
-                    arama sayfasına
-                  </Link>{" "}
-                  geç.
-                </p>
-              </div>
-              <form
-                action={basePath}
-                method="get"
-                className="w-full shrink-0 lg:max-w-md xl:max-w-lg"
-              >
-                {catParam ? (
-                  <input type="hidden" name="cat" value={catParam} />
-                ) : null}
-                {mode !== "new" ? (
-                  <input type="hidden" name="mode" value={mode} />
-                ) : null}
-                <p className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-                  Mağazada ara
-                </p>
-                <div className="flex w-full min-w-0 flex-row gap-2">
-                  <input
-                    type="search"
-                    name="q"
-                    defaultValue={q}
-                    placeholder="Oyun veya geliştirici ara…"
-                    className="h-11 min-w-0 flex-1 rounded-lg border border-white/[0.08] bg-background/80 px-4 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent"
-                    aria-label="Mağazada ara"
-                  />
-                  <Button type="submit" className="h-11 shrink-0 px-5">
-                    Ara
-                  </Button>
-                </div>
-              </form>
-            </div>
-          </div>
-
           <StoreBrowseSections listBasePath={basePath} />
 
           <div className="mb-5 flex flex-wrap gap-2">

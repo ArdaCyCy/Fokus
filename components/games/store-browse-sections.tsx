@@ -19,7 +19,27 @@ function listQs(base: ListBase, search: string) {
   return `${base}?${qs}`;
 }
 
-export async function StoreBrowseSections({
+export async function StoreBrowseSections(
+  props: { listBasePath?: ListBase } = {},
+) {
+  try {
+    return await storeBrowseSectionsInner(props);
+  } catch (e) {
+    console.error("[Fokus] StoreBrowseSections:", e);
+    return (
+      <div className="mb-10 rounded-lg border border-amber-500/25 bg-amber-500/[0.07] px-4 py-4 text-center text-sm text-muted-foreground">
+        <p className="font-medium text-foreground">Mağaza şeritleri yüklenemedi</p>
+        <p className="mt-2 text-xs">
+          Yerelde <code className="rounded bg-muted px-1">DATABASE_URL</code>{" "}
+          doğru mu ve veritabanı erişilebilir mi kontrol et; gerekirse{" "}
+          <code className="rounded bg-muted px-1">npx prisma db push</code>.
+        </p>
+      </div>
+    );
+  }
+}
+
+async function storeBrowseSectionsInner({
   listBasePath = "/games",
 }: {
   listBasePath?: ListBase;

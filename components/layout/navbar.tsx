@@ -41,7 +41,9 @@ const navLinkClass = (active: boolean) =>
   );
 
 function navItemActive(pathname: string, href: string) {
-  if (href === "/") return pathname === "/";
+  if (href === "/") {
+    return pathname === "/" || pathname.startsWith("/games");
+  }
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 

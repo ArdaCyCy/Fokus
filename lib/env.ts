@@ -1,7 +1,26 @@
 import { z } from "zod";
 
+const isProd = process.env.NODE_ENV === "production";
+
+/**
+ * Geliştirmede DATABASE_URL yoksa uygulama import aşamasında çökmez;
+ * Prisma sorguları hata verir — mağaza bileşenleri try/catch ile mesaj gösterir.
+ * Üretimde gerçek URL zorunludur.
+ */
+function resolveDatabaseUrlForBootstrap(): string {
+  const raw = process.env.DATABASE_URL?.trim();
+  if (raw) return raw;
+  if (!isProd) {
+    console.warn(
+      "[Fokus] DATABASE_URL tanımlı değil — yerel geliştirme için geçici adres kullanılıyor. Veritabanına bağlanmak için .env.local içine Neon/PostgreSQL URL ekle.",
+    );
+    return "postgresql://127.0.0.1:5432/fokus_dev_placeholder?schema=public";
+  }
+  return "";
+}
+
 const envSchema = z.object({
-  DATABASE_URL: z.string().min(1, "DATABASE_URL is required"),
+  DATABASE_URL: z.string().min(1, "DATABASE_URL is required in production"),
   NEXT_PUBLIC_APP_URL: z.preprocess(
     (v) => (typeof v === "string" && v.trim() === "" ? undefined : v),
     z.string().url("NEXT_PUBLIC_APP_URL must be a valid URL").optional(),
@@ -11,7 +30,12 @@ const envSchema = z.object({
   NODE_ENV: z.enum(["development", "test", "production"]).optional().default("development"),
 });
 
-const parsed = envSchema.safeParse(process.env);
+const envInput = {
+  ...process.env,
+  DATABASE_URL: resolveDatabaseUrlForBootstrap(),
+};
+
+const parsed = envSchema.safeParse(envInput);
 if (!parsed.success) {
   const issues = parsed.error.issues.map((i) => `${i.path.join(".")}: ${i.message}`).join("; ");
   throw new Error(`Invalid environment variables: ${issues}`);

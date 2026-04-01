@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import type { Metadata } from "next";
 import { PurchaseStatus } from "@prisma/client";
 import { Apple, Eye, Monitor, Star, Terminal } from "lucide-react";
@@ -8,6 +8,9 @@ import { Apple, Eye, Monitor, Star, Terminal } from "lucide-react";
 import {
   getPublishedDlcsForParent,
   getPublishedGameBySlug,
+  getPublishedGameMetaByParam,
+  getPublishedSlugByGameId,
+  isLikelyDatabaseGameId,
   averageRating,
 } from "@/lib/data/games";
 import { getSimilarPublishedGames } from "@/lib/recommendations";
@@ -111,7 +114,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const game = await getPublishedGameBySlug(slug);
+  const game = await getPublishedGameMetaByParam(slug);
   if (!game) return { title: "Oyun bulunamadı" };
   return {
     title: `${game.title} · Fokus`,
@@ -133,6 +136,18 @@ export default async function GameDetailPage({
     reviewSortRaw === "helpful" || reviewSortRaw === "rating"
       ? reviewSortRaw
       : "newest";
+
+  if (isLikelyDatabaseGameId(slug)) {
+    const canonical = await getPublishedSlugByGameId(slug);
+    if (canonical) {
+      const qs = new URLSearchParams();
+      if (reviewSortRaw === "helpful" || reviewSortRaw === "rating") {
+        qs.set("r", reviewSortRaw);
+      }
+      const suffix = qs.toString() ? `?${qs}` : "";
+      redirect(`/games/${canonical}${suffix}`);
+    }
+  }
 
   const game = await getPublishedGameBySlug(slug);
   if (!game) notFound();

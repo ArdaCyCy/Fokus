@@ -226,6 +226,7 @@ model Game {
   coverImageUrl      String?
   screenshotUrls     String[] @default([])
   developerName      String
+  /** Satıcı / geliştirici: uygulama katmanında `User.id` ile doldurulur (API: developer/games). */
   developerSlug      String?
   shortDescription   String?
   descriptionMd      String?

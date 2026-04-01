@@ -4,7 +4,15 @@ Türkiye odaklı **indie oyun mağazası** deneyimi: vitrin, arama, kütüphane,
 
 ## Stack
 
-Next.js 15 (App Router) · React 19 · TypeScript · Tailwind CSS · Prisma · Clerk · İyzico
+Next.js 15 (App Router) · React 19 · TypeScript · Tailwind CSS · **PostgreSQL** · **Prisma** · **Clerk** · **Node.js API (Route Handlers)** · İyzico · Resend (isteğe bağlı)
+
+### Backend ve veritabanı (CV / mülakat için)
+
+- **Backend:** `app/api/**/route.ts` altında **onlarca HTTP endpoint** (REST benzeri JSON API). Ayrı Python/Express sunucusu yok; çalışma zamanı **Node.js (Next.js server)**.
+- **Veritabanı:** **PostgreSQL** + **Prisma** (`prisma/schema.prisma`). `Game`, `User`, `Purchase`, `Review`, `Gift` vb. ilişkisel model.
+- **Kimlik:** **Clerk** (kayıt / giriş / oturum). *(Başka bir projede Supabase Auth tercih edilebilir; bu repoda Clerk ile tam entegre akış vardır.)*
+- **Detaylı mimari:** [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md)
+- **Canlı / Vercel kontrol listesi:** [docs/CANLI-KILAVUZ.md](./docs/CANLI-KILAVUZ.md)
 
 ## Hızlı başlangıç
 

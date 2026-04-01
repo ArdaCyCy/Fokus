@@ -250,3 +250,44 @@ export async function getPublishedGameBySlug(
     },
   });
 }
+
+/**
+ * URL parçası tire içermeyen uzun bir id gibi görünüyorsa (ör. Prisma cuid),
+ * önce slug ile eşleşme yoksa `id` ile yayımlanmış oyun aranır.
+ */
+export function isLikelyDatabaseGameId(param: string): boolean {
+  if (param.length < 24 || param.length > 32) return false;
+  if (param.includes("-")) return false;
+  return /^[a-z][a-z0-9]+$/i.test(param);
+}
+
+/** Yayımlanmış oyunun kanonik slug'ı (ID ile gelen istekleri /games/[slug]'a yönlendirmek için). */
+export async function getPublishedSlugByGameId(
+  id: string
+): Promise<string | null> {
+  const row = await db.game.findFirst({
+    where: { id, isPublished: true, status: "PUBLISHED" },
+    select: { slug: true },
+  });
+  return row?.slug ?? null;
+}
+
+/** Metadata: slug veya id ile başlık/açıklama. */
+export async function getPublishedGameMetaByParam(
+  param: string
+): Promise<{
+  title: string;
+  shortDescription: string | null;
+  description: string | null;
+} | null> {
+  const bySlug = await db.game.findFirst({
+    where: { slug: param, isPublished: true, status: "PUBLISHED" },
+    select: { title: true, shortDescription: true, description: true },
+  });
+  if (bySlug) return bySlug;
+  if (!isLikelyDatabaseGameId(param)) return null;
+  return db.game.findFirst({
+    where: { id: param, isPublished: true, status: "PUBLISHED" },
+    select: { title: true, shortDescription: true, description: true },
+  });
+}
